@@ -11,6 +11,7 @@ import {
   RefreshCw,
   ChevronDown,
   ChevronUp,
+  Lightbulb,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 
@@ -242,15 +243,41 @@ function Posts() {
                         <span>u/{post.author}</span>
                       </div>
 
-                      <a
-                        href={post.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg transition-colors w-full justify-center"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        View Post
-                      </a>
+                      <div className="space-y-3">
+                        <a
+                          href={post.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg transition-colors w-full justify-center"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          View Post
+                        </a>
+
+                        <button
+                          onClick={() => {
+                            console.log("Post being sent:", post);
+                            const postData = encodeURIComponent(
+                              JSON.stringify({
+                                title: post.title,
+                                body: post.body || "",
+                                author: post.author,
+                                link: post.link,
+                                score: post.score,
+                                comments: post.comments,
+                              })
+                            );
+                            console.log("Encoded post data:", postData);
+                            const url = `/api-key?post=${postData}`;
+                            console.log("Navigating to:", url);
+                            navigate(url);
+                          }}
+                          className="inline-flex items-center bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-4 py-2 rounded-lg transition-all duration-300 w-full justify-center transform hover:scale-105"
+                        >
+                          <Lightbulb className="w-4 h-4 mr-2" />
+                          Generate SaaS Idea
+                        </button>
+                      </div>
                     </div>
 
                     {/* Action Button */}
@@ -332,7 +359,7 @@ function Posts() {
                     Loading...
                   </div>
                 ) : (
-                  "Load Next 5 Posts"
+                  "More"
                 )}
               </button>
             </motion.div>

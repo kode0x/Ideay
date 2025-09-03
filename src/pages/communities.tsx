@@ -6,16 +6,7 @@ import { sortIcons } from "../constants/SortIcons";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  TrendingUp,
-  Users,
-  ArrowRight,
-  Sparkles,
-  Target,
-  Filter,
-  Zap,
-} from "lucide-react";
+import { Search, Users, ArrowRight, Filter, Zap } from "lucide-react";
 
 function Communities() {
   const navigate = useNavigate();

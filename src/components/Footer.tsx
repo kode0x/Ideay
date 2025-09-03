@@ -22,34 +22,6 @@ function Footer() {
               Reddit scraper. We analyze trending discussions to surface
               innovative business opportunities.
             </p>
-            <div className="flex space-x-4">
-              <a
-                href="https://github.com/kode0x/Ideay"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href="mailto:contact@ideay.com"
-                className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           {/* Quick Links */}
@@ -64,14 +36,7 @@ function Footer() {
                   Home
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/search"
-                  className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-                >
-                  Communities
-                </Link>
-              </li>
+
               <li>
                 <a
                   href="#features"
@@ -90,107 +55,18 @@ function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Support */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Support</h3>
-            <ul className="space-y-3">
-              <li>
-                <a
-                  href="https://github.com/kode0x/Ideay/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-                >
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/kode0x/Ideay"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:contact@ideay.com"
-                  className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-                >
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-                >
-                  Status
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
-
-        {/* Newsletter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-8 mb-12"
-        >
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Stay Updated with Latest Ideas
-            </h3>
-            <p className="text-zinc-400 mb-6 max-w-md mx-auto">
-              Get notified about trending SaaS opportunities and market insights
-              delivered to your inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-rose-500 transition-colors duration-300"
-              />
-              <button className="bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-rose-500/25 transition-all duration-300 hover:scale-105">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-zinc-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-zinc-400 text-sm mb-4 md:mb-0">
-              © 2025 Ideay. All rights reserved. Made with{" "}
-              <Heart className="inline w-4 h-4 text-rose-500" /> by Jyotiraditya
-              Singh.
-            </div>
-            <div className="flex space-x-6 text-sm">
-              <a
-                href="#"
-                className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="#"
-                className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-              >
-                Terms of Service
-              </a>
-              <a
-                href="#"
-                className="text-zinc-400 hover:text-rose-400 transition-colors duration-300"
-              >
-                Cookie Policy
-              </a>
+            <div className="text-zinc-400 text-sm mb-4 md:mb-0 flex justify-between w-full">
+              <p>© 2025 Ideay. All Rights Reserved.</p>
+              <p>
+                Made With{"  "}
+                <Heart className="inline w-4 h-4 text-rose-500" /> By
+                Jyotiraditya Singh.
+              </p>
             </div>
           </div>
         </div>
