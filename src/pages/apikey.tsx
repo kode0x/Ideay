@@ -34,8 +34,24 @@ function ApiKey() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Try to get post data from sessionStorage first, then URL params as fallback
+    const storedPost = sessionStorage.getItem("selectedPost");
     const postParam = searchParams.get("post");
-    if (postParam) {
+
+    if (storedPost) {
+      try {
+        const decodedPost = JSON.parse(storedPost);
+        setPost(decodedPost);
+        // Clear the stored data after using it
+        sessionStorage.removeItem("selectedPost");
+      } catch (err) {
+        setError(
+          `Invalid stored post data: ${
+            err instanceof Error ? err.message : "Unknown error"
+          }`
+        );
+      }
+    } else if (postParam) {
       try {
         const decodedPost = JSON.parse(decodeURIComponent(postParam));
         setPost(decodedPost);
@@ -232,7 +248,7 @@ function ApiKey() {
                   {post.title}
                 </h3>
                 <div className="flex items-center justify-center text-sm text-zinc-400 mb-6 space-x-6">
-                  <span>by u/{post.author}</span>
+                  <span>by {post.author}</span>
                   <span>•</span>
                   <span>{post.score} upvotes</span>
                   <span>•</span>

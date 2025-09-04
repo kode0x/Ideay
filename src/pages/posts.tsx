@@ -40,14 +40,19 @@ function Posts() {
   const community = searchParams.get("community");
   const sort = searchParams.get("sort");
 
-  // Use stored parameters as fallback
-  const activeCommunity = community || currentCommunity;
-  const activeSort = sort || currentSort;
+  // Use stored parameters as fallback, but ensure we always have values
+  const activeCommunity = community || currentCommunity || null;
+  const activeSort = sort || currentSort || null;
+
+  // Debug logging
+  console.log("Debug - URL params:", { community, sort });
+  console.log("Debug - Stored params:", { currentCommunity, currentSort });
+  console.log("Debug - Active params:", { activeCommunity, activeSort });
 
   const fetchPosts = async (isLoadMore = false) => {
     if (!activeCommunity || !activeSort) {
       setError("Missing Community or Sort Parameters");
-      setLoading(true);
+      setLoading(false);
       return;
     }
 
@@ -90,6 +95,8 @@ function Posts() {
         setPosts(newPosts);
       }
 
+      // Update current params after successful fetch
+      setCurrentParams(activeCommunity, activeSort);
       setError(null);
     } catch (err) {
       console.error("Fetch Error:", err);
@@ -107,30 +114,31 @@ function Posts() {
   };
 
   useEffect(() => {
-    // Update URL if we're using stored parameters and URL is missing them
-    if (
-      currentCommunity &&
-      currentSort &&
-      (!searchParams.get("community") || !searchParams.get("sort"))
-    ) {
+    // If we have stored parameters but no URL parameters, update the URL
+    if (currentCommunity && currentSort && (!community || !sort)) {
       const newSearchParams = new URLSearchParams();
       newSearchParams.set("community", currentCommunity);
       newSearchParams.set("sort", currentSort);
       navigate(`/posts?${newSearchParams.toString()}`, { replace: true });
-      return; // Let the navigation trigger a new useEffect
+      return;
     }
 
-    // Only fetch if we need to (different community/sort or no posts)
-    if (shouldRefetch(activeCommunity, activeSort)) {
-      fetchPosts();
-    } else {
-      // Update current params even if we don't refetch
-      setCurrentParams(activeCommunity, activeSort);
+    // If we have active parameters, fetch posts if needed
+    if (activeCommunity && activeSort) {
+      if (shouldRefetch(activeCommunity, activeSort)) {
+        fetchPosts();
+      } else {
+        // Update current params even if we don't refetch
+        setCurrentParams(activeCommunity, activeSort);
+      }
     }
   }, [
     activeCommunity,
     activeSort,
-    searchParams,
+    community,
+    sort,
+    currentCommunity,
+    currentSort,
     navigate,
     setCurrentParams,
     shouldRefetch,
@@ -219,8 +227,10 @@ function Posts() {
           </div>
 
           <h1 className="text-3xl md:text-5xl font-semibold text-center">
-            <span className="text-rose-500">{activeCommunity}</span> -{" "}
-            {activeSort} Posts
+            <span className="text-rose-500">
+              {activeCommunity || "Community"}
+            </span>{" "}
+            - {activeSort || "Posts"} Posts
           </h1>
         </motion.div>
 
@@ -266,7 +276,7 @@ function Posts() {
                     <div className="space-y-2 mb-4 text-sm text-zinc-400">
                       <div className="flex items-center">
                         <User className="w-4 h-4 mr-2" />
-                        <span>u/{post.author}</span>
+                        <span>{post.author}</span>
                       </div>
 
                       <div className="space-y-3">
@@ -283,20 +293,29 @@ function Posts() {
                         <button
                           onClick={() => {
                             console.log("Post being sent:", post);
-                            const postData = encodeURIComponent(
-                              JSON.stringify({
-                                title: post.title,
+                            try {
+                              // Store post data in sessionStorage instead of URL
+                              const postData = {
+                                title: post.title || "",
                                 body: post.body || "",
-                                author: post.author,
-                                link: post.link,
-                                score: post.score,
-                                comments: post.comments,
-                              })
-                            );
-                            console.log("Encoded post data:", postData);
-                            const url = `/api-key?post=${postData}`;
-                            console.log("Navigating to:", url);
-                            navigate(url);
+                                author: post.author || "",
+                                link: post.link || "",
+                                score: post.score || 0,
+                                comments: post.comments || 0,
+                              };
+
+                              sessionStorage.setItem(
+                                "selectedPost",
+                                JSON.stringify(postData)
+                              );
+                              console.log("Post data stored in sessionStorage");
+                              navigate("/api-key");
+                            } catch (err) {
+                              console.error("Error storing post data:", err);
+                              alert(
+                                "Error preparing post data. Please try again."
+                              );
+                            }
                           }}
                           className="inline-flex items-center bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-4 py-2 rounded-lg transition-all duration-300 w-full justify-center transform hover:scale-105"
                         >

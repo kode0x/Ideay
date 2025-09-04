@@ -48,11 +48,24 @@ function GenerateIdea() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Try to get data from sessionStorage first, then URL params as fallback
+    const storedData = sessionStorage.getItem("ideaGenerationData");
     const postData = searchParams.get("post");
     const providerParam = searchParams.get("provider");
     const apiKeyParam = searchParams.get("apiKey");
 
-    if (postData && providerParam && apiKeyParam) {
+    if (storedData) {
+      try {
+        const { post: parsedPost, provider, apiKey } = JSON.parse(storedData);
+        setPost(parsedPost);
+        // Clear the stored data after using it
+        sessionStorage.removeItem("ideaGenerationData");
+        generateBusinessPlan(parsedPost, provider, apiKey);
+      } catch (err) {
+        console.error("Failed to parse stored data:", err);
+        setError("Invalid stored data. Please try again.");
+      }
+    } else if (postData && providerParam && apiKeyParam) {
       try {
         const parsedPost = JSON.parse(decodeURIComponent(postData));
         setPost(parsedPost);
@@ -152,7 +165,7 @@ ${businessPlan.nextSteps.map((step) => `• ${step}`).join("\n")}
 
 ---
 Generated from Reddit post: ${post?.title}
-By: u/${post?.author}`;
+By: ${post?.author}`;
 
     const blob = new Blob([content], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
@@ -417,7 +430,7 @@ By: u/${post?.author}`;
                     {post.title}
                   </h4>
                   <p className="text-sm text-zinc-400">
-                    by u/{post.author} • {post.score} upvotes
+                    by {post.author} • {post.score} upvotes
                   </p>
                 </div>
               </div>
