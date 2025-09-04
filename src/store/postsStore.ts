@@ -97,9 +97,9 @@ export const usePostsStore = create<PostsState>()(
         const isSameParams =
           state.currentCommunity === community && state.currentSort === sort;
         const hasNoPosts = state.posts.length === 0;
-        const isStale =
-          state.lastFetchTime &&
-          Date.now() - state.lastFetchTime > 5 * 60 * 1000; // 5 minutes
+        const isStale = state.lastFetchTime
+          ? Date.now() - state.lastFetchTime > 5 * 60 * 1000 // 5 minutes
+          : false;
 
         return !isSameParams || hasNoPosts || isStale;
       },

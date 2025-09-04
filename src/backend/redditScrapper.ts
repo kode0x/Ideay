@@ -11,6 +11,30 @@ export interface RedditPost {
   body?: string;
 }
 
+// Reddit API response types
+interface RedditAPIPost {
+  title: string;
+  url: string;
+  permalink: string;
+  author: string;
+  score: number;
+  num_comments: number;
+  created_utc: number;
+  thumbnail: string;
+  selftext: string;
+}
+
+interface RedditAPIChild {
+  data: RedditAPIPost;
+}
+
+interface RedditAPIResponse {
+  data: {
+    children: RedditAPIChild[];
+    after?: string;
+  };
+}
+
 // Alternative Reddit API scraper using fetch
 export async function scrapeRedditAPI(
   community: string,
@@ -37,32 +61,34 @@ export async function scrapeRedditAPI(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: RedditAPIResponse = await response.json();
 
     if (!data.data || !data.data.children) {
       throw new Error("Invalid Reddit API response structure");
     }
 
-    const posts: RedditPost[] = data.data.children.map((child: any) => {
-      const post = child.data;
-      return {
-        title: post.title || "Untitled",
-        link: post.url.startsWith("http")
-          ? post.url
-          : `https://www.reddit.com${post.permalink}`,
-        author: post.author || "Unknown",
-        score: post.score || 0,
-        comments: post.num_comments || 0,
-        timestamp: new Date(post.created_utc * 1000).toISOString(),
-        thumbnail:
-          post.thumbnail &&
-          post.thumbnail !== "self" &&
-          post.thumbnail !== "default"
-            ? post.thumbnail
-            : undefined,
-        body: post.selftext || undefined,
-      };
-    });
+    const posts: RedditPost[] = data.data.children.map(
+      (child: RedditAPIChild) => {
+        const post = child.data;
+        return {
+          title: post.title || "Untitled",
+          link: post.url.startsWith("http")
+            ? post.url
+            : `https://www.reddit.com${post.permalink}`,
+          author: post.author || "Unknown",
+          score: post.score || 0,
+          comments: post.num_comments || 0,
+          timestamp: new Date(post.created_utc * 1000).toISOString(),
+          thumbnail:
+            post.thumbnail &&
+            post.thumbnail !== "self" &&
+            post.thumbnail !== "default"
+              ? post.thumbnail
+              : undefined,
+          body: post.selftext || undefined,
+        };
+      }
+    );
 
     console.log(`Successfully scraped ${posts.length} posts from Reddit API`);
     return posts;
@@ -108,7 +134,7 @@ async function scrapeRedditPuppeteer(
   let browser;
   try {
     browser = await puppeteer.launch({
-      headless: "new",
+      headless: true,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -158,7 +184,7 @@ async function scrapeRedditPuppeteer(
     const pageTitle = await page.title();
     console.log("Page title:", pageTitle);
 
-    const posts = await page.evaluate((postLimit) => {
+    const posts = await page.evaluate((postLimit: number) => {
       console.log("=== STARTING POST EXTRACTION ===");
       console.log("Page URL:", window.location.href);
       console.log("Document ready state:", document.readyState);
@@ -197,13 +223,11 @@ async function scrapeRedditPuppeteer(
       ];
 
       let articles: NodeListOf<Element> | null = null;
-      let usedSelector = "";
 
       for (const selector of selectors) {
         articles = document.querySelectorAll(selector);
         console.log(`Selector "${selector}" found ${articles.length} elements`);
         if (articles.length > 0) {
-          usedSelector = selector;
           console.log(
             `Using selector: ${selector} with ${articles.length} posts`
           );
@@ -225,10 +249,10 @@ async function scrapeRedditPuppeteer(
         // If we find comment links, try to extract basic info
         if (commentLinks.length > 0) {
           console.log("Attempting to extract from comment links...");
-          const scraped: any[] = [];
+          const scraped: RedditPost[] = [];
 
           for (let i = 0; i < Math.min(commentLinks.length, postLimit); i++) {
-            const link = commentLinks[i];
+            const link = commentLinks[i] as HTMLAnchorElement;
             const href = link.getAttribute("href");
             const text = link.textContent?.trim();
 
@@ -258,7 +282,7 @@ async function scrapeRedditPuppeteer(
       console.log(
         `Processing ${Math.min(articles.length, postLimit)} posts...`
       );
-      const scraped: any[] = [];
+      const scraped: RedditPost[] = [];
 
       for (let i = 0; i < Math.min(articles.length, postLimit); i++) {
         const article = articles[i];
@@ -313,7 +337,9 @@ async function scrapeRedditPuppeteer(
 
         let link = "";
         for (const selector of linkSelectors) {
-          const linkElement = article.querySelector(selector);
+          const linkElement = article.querySelector(
+            selector
+          ) as HTMLAnchorElement | null;
           if (linkElement?.getAttribute("href")) {
             link = linkElement.getAttribute("href") || "";
             console.log(`Found link with "${selector}": ${link}`);

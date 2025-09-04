@@ -40,7 +40,11 @@ function ApiKey() {
         const decodedPost = JSON.parse(decodeURIComponent(postParam));
         setPost(decodedPost);
       } catch (err) {
-        setError("Invalid post data");
+        setError(
+          `Invalid post data: ${
+            err instanceof Error ? err.message : "Unknown error"
+          }`
+        );
       }
     } else {
       setError("No post selected");
@@ -82,7 +86,11 @@ function ApiKey() {
 
       navigate(`/generate-idea?${params.toString()}`);
     } catch (err) {
-      setError("Failed To Proceed. Please Try Again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed To Proceed. Please Try Again."
+      );
       setIsLoading(false);
     }
   };
