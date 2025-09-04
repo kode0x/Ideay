@@ -1,14 +1,6 @@
 import { features } from "../constants/Features";
 import { motion } from "framer-motion";
-import {
-  Brain,
-  Filter,
-  Clock,
-  Zap,
-  Shield,
-  BarChart3,
-  Sparkles,
-} from "lucide-react";
+import { Brain, Filter, Clock, Zap, Sparkles } from "lucide-react";
 
 const featureIcons = [Brain, Filter, Clock];
 

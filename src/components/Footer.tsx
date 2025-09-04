@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Github, Twitter, Linkedin, Mail, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 
 function Footer() {
   return (

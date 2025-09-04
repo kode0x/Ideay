@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   ExternalLink,
-  MessageCircle,
-  TrendingUp,
   User,
-  Clock,
   RefreshCw,
   ChevronDown,
   ChevronUp,
@@ -15,17 +12,6 @@ import {
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { usePostsStore } from "../store/postsStore";
-
-interface RedditPost {
-  title: string;
-  link: string;
-  author: string;
-  score: number;
-  comments: number;
-  timestamp: string;
-  thumbnail?: string;
-  body?: string;
-}
 
 function Posts() {
   const [searchParams] = useSearchParams();
@@ -149,13 +135,6 @@ function Posts() {
     setCurrentParams,
     shouldRefetch,
   ]);
-
-  const formatScore = (score: number) => {
-    if (score >= 1000) {
-      return `${(score / 1000).toFixed(1)}k`;
-    }
-    return score.toString();
-  };
 
   if (loading && posts.length === 0) {
     return (
