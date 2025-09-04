@@ -14,6 +14,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
+import { usePostsStore } from "../store/postsStore";
 
 interface RedditPost {
   title: string;
@@ -29,19 +30,38 @@ interface RedditPost {
 function Posts() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<RedditPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [expandedPosts, setExpandedPosts] = useState<Set<number>>(new Set());
+
+  // Use Zustand store instead of local state
+  const {
+    posts,
+    loading,
+    error,
+    loadingMore,
+    expandedPosts,
+    currentCommunity,
+    currentSort,
+    setPosts,
+    addPosts,
+    setLoading,
+    setError,
+    setLoadingMore,
+    togglePostExpansion,
+    setCurrentParams,
+    clearPosts,
+    shouldRefetch,
+  } = usePostsStore();
 
   const community = searchParams.get("community");
   const sort = searchParams.get("sort");
 
+  // Use stored parameters as fallback
+  const activeCommunity = community || currentCommunity;
+  const activeSort = sort || currentSort;
+
   const fetchPosts = async (isLoadMore = false) => {
-    if (!community || !sort) {
+    if (!activeCommunity || !activeSort) {
       setError("Missing Community or Sort Parameters");
-      setLoading(false);
+      setLoading(true);
       return;
     }
 
@@ -50,11 +70,11 @@ function Posts() {
         setLoadingMore(true);
       } else {
         setLoading(true);
-        setPosts([]);
+        clearPosts();
       }
 
-      const communityName = community.replace("r/", "");
-      const sortType = sort.toLowerCase();
+      const communityName = activeCommunity.replace("r/", "");
+      const sortType = activeSort.toLowerCase();
 
       const response = await fetch(
         `http://localhost:3000/api/scrape?community=${communityName}&sort=${sortType}&limit=5`,
@@ -79,7 +99,7 @@ function Posts() {
       console.log("First Post:", newPosts[0]);
 
       if (isLoadMore) {
-        setPosts((prev) => [...prev, ...newPosts]);
+        addPosts(newPosts);
       } else {
         setPosts(newPosts);
       }
@@ -101,24 +121,40 @@ function Posts() {
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, [community, sort]);
+    // Update URL if we're using stored parameters and URL is missing them
+    if (
+      currentCommunity &&
+      currentSort &&
+      (!searchParams.get("community") || !searchParams.get("sort"))
+    ) {
+      const newSearchParams = new URLSearchParams();
+      newSearchParams.set("community", currentCommunity);
+      newSearchParams.set("sort", currentSort);
+      navigate(`/posts?${newSearchParams.toString()}`, { replace: true });
+      return; // Let the navigation trigger a new useEffect
+    }
+
+    // Only fetch if we need to (different community/sort or no posts)
+    if (shouldRefetch(activeCommunity, activeSort)) {
+      fetchPosts();
+    } else {
+      // Update current params even if we don't refetch
+      setCurrentParams(activeCommunity, activeSort);
+    }
+  }, [
+    activeCommunity,
+    activeSort,
+    searchParams,
+    navigate,
+    setCurrentParams,
+    shouldRefetch,
+  ]);
 
   const formatScore = (score: number) => {
     if (score >= 1000) {
       return `${(score / 1000).toFixed(1)}k`;
     }
     return score.toString();
-  };
-
-  const togglePostExpansion = (index: number) => {
-    const newExpanded = new Set(expandedPosts);
-    if (newExpanded.has(index)) {
-      newExpanded.delete(index);
-    } else {
-      newExpanded.add(index);
-    }
-    setExpandedPosts(newExpanded);
   };
 
   if (loading && posts.length === 0) {
@@ -175,7 +211,17 @@ function Posts() {
         >
           <div className="flex items-center justify-between mb-6">
             <button
-              onClick={() => navigate("/search")}
+              onClick={() => {
+                if (currentCommunity && currentSort) {
+                  navigate(
+                    `/search?community=${encodeURIComponent(
+                      currentCommunity
+                    )}&sort=${encodeURIComponent(currentSort)}`
+                  );
+                } else {
+                  navigate("/search");
+                }
+              }}
               className="flex items-center text-rose-500 hover:text-rose-400 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
@@ -194,7 +240,8 @@ function Posts() {
           </div>
 
           <h1 className="text-3xl md:text-5xl font-semibold text-center">
-            <span className="text-rose-500">{community}</span> - {sort} Posts
+            <span className="text-rose-500">{activeCommunity}</span> -{" "}
+            {activeSort} Posts
           </h1>
         </motion.div>
 

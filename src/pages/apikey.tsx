@@ -12,6 +12,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
+import { usePostsStore } from "../store/postsStore";
 
 interface RedditPost {
   title: string;
@@ -51,7 +52,7 @@ function ApiKey() {
       id: "google",
       name: "Google AI",
       description: "Gemini 1.5 Flash - Fast and reliable",
-      icon: "🔍",
+      icon: "",
     },
   ];
 
@@ -102,7 +103,19 @@ function ApiKey() {
               <h2 className="text-2xl font-bold mb-4">No Post Selected</h2>
               <p className="text-red-400 mb-6">{error}</p>
               <button
-                onClick={() => navigate("/posts")}
+                onClick={() => {
+                  const { currentCommunity, currentSort } =
+                    usePostsStore.getState();
+                  if (currentCommunity && currentSort) {
+                    navigate(
+                      `/posts?community=${encodeURIComponent(
+                        currentCommunity
+                      )}&sort=${encodeURIComponent(currentSort)}`
+                    );
+                  } else {
+                    navigate("/posts");
+                  }
+                }}
                 className="bg-rose-500 hover:bg-rose-600 px-6 py-3 rounded-lg transition-colors flex items-center mx-auto"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
@@ -140,7 +153,19 @@ function ApiKey() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            onClick={() => navigate("/posts")}
+            onClick={() => {
+              const { currentCommunity, currentSort } =
+                usePostsStore.getState();
+              if (currentCommunity && currentSort) {
+                navigate(
+                  `/posts?community=${encodeURIComponent(
+                    currentCommunity
+                  )}&sort=${encodeURIComponent(currentSort)}`
+                );
+              } else {
+                navigate("/posts");
+              }
+            }}
             className="inline-flex items-center text-zinc-400 hover:text-white transition-colors mb-16"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />

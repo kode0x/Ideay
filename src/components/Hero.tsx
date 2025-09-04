@@ -42,9 +42,9 @@ function Hero() {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="text-lg md:text-xl lg:text-2xl text-zinc-300 mx-auto max-w-4xl mb-12 leading-relaxed"
         >
-          Let our intelligent scraper analyze Reddit's vast discussions to surface
-          trending SaaS opportunities, innovative solutions, and niche business
-          ideas that could be your next million-dollar venture.
+          Let our intelligent scraper analyze Reddit's vast discussions to
+          surface trending SaaS opportunities, innovative solutions, and niche
+          business ideas that could be your next million-dollar venture.
         </motion.p>
 
         {/* Stats */}
@@ -55,15 +55,21 @@ function Hero() {
           className="flex flex-wrap justify-center items-center gap-8 mb-12"
         >
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-1">15+</div>
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+              15+
+            </div>
             <div className="text-zinc-400 text-sm">Curated Communities</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-1">24/7</div>
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+              24/7
+            </div>
             <div className="text-zinc-400 text-sm">Real-time Monitoring</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-1">AI</div>
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+              AI
+            </div>
             <div className="text-zinc-400 text-sm">Powered Analysis</div>
           </div>
         </motion.div>
@@ -87,9 +93,6 @@ function Hero() {
             Generate Ideas Now
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
-          <button className="border border-zinc-600 text-zinc-300 px-8 py-4 rounded-xl font-medium text-lg hover:border-rose-500 hover:text-rose-400 transition-all duration-300 hover:scale-105">
-            Watch Demo
-          </button>
         </motion.div>
 
         {/* Trust indicators */}
@@ -99,7 +102,9 @@ function Hero() {
           transition={{ delay: 1.0, duration: 0.6 }}
           className="mt-16 pt-8 border-t border-zinc-800"
         >
-          <p className="text-zinc-500 text-sm mb-4">Trusted by entrepreneurs worldwide</p>
+          <p className="text-zinc-500 text-sm mb-4">
+            Trusted by entrepreneurs worldwide
+          </p>
           <div className="flex flex-wrap justify-center items-center gap-6 opacity-60">
             <div className="text-zinc-400 text-sm">🚀 Startup Founders</div>
             <div className="text-zinc-400 text-sm">💼 Product Managers</div>
