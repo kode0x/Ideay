@@ -3,7 +3,7 @@ import cors from "cors";
 import { scrapeReddit } from "./redditScrapper";
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -55,7 +55,15 @@ app.post("/api/generate-idea", async (req, res) => {
   }
 });
 
-async function generateSaaSIdea(post: any, provider: string, apiKey: string) {
+interface RedditPost {
+  title: string;
+  body?: string;
+  author: string;
+  score: number;
+  comments: number;
+}
+
+async function generateSaaSIdea(post: RedditPost, provider: string, apiKey: string) {
   const prompt = `
 Based on this Reddit post, generate a comprehensive SaaS business plan:
 
@@ -142,7 +150,7 @@ Make sure the response is valid JSON and the business plan is realistic, actiona
 
 async function callGoogleAI(prompt: string, apiKey: string) {
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: {

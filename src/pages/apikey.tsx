@@ -42,8 +42,7 @@ function ApiKey() {
       try {
         const decodedPost = JSON.parse(storedPost);
         setPost(decodedPost);
-        // Clear the stored data after using it
-        sessionStorage.removeItem("selectedPost");
+        // Keep the stored data to avoid loss during React StrictMode double-mount in dev
       } catch (err) {
         setError(
           `Invalid stored post data: ${
